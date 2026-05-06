@@ -1,1 +1,0 @@
-# joaogregorio-netizen.github.io
