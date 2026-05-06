@@ -1224,17 +1224,15 @@ async function gdrivePull(silent = false) {
   }
 }
 
-// ── Wrapper de salvar com auto-push ───────────────────────────────────
-// IMPORTANTE: deve vir DEPOIS das funções gdrive para não criar loop
-const _salvarOriginal = salvar;
-function salvar(data) {
-  const ok = _salvarOriginal(data);
-  if (_gtoken && _gauto) {
-    clearTimeout(salvar._debounce);
-    salvar._debounce = setTimeout(() => gdrivePush(true), 2000);
+// ── Auto-push: intercepta localStorage diretamente para evitar recursão ──
+const _lsSetOriginal = localStorage.setItem.bind(localStorage);
+localStorage.setItem = function(k, v) {
+  _lsSetOriginal(k, v);
+  if (k === KEY && _gtoken && _gauto) {
+    clearTimeout(window._gdrivePushDebounce);
+    window._gdrivePushDebounce = setTimeout(() => gdrivePush(true), 2000);
   }
-  return ok;
-}
+};
 
 // ── Reconecta automaticamente ao carregar a página ────────────────────
 // Usa prompt:'none' para reconectar sem popup se já tiver sessão Google ativa
