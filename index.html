@@ -663,9 +663,13 @@ function load() {
     return JSON.parse(r);
   } catch { return { temas: [] }; }
 }
-function salvar(data) {
+function salvar(data, _skipAutopush = false) {
   try {
     localStorage.setItem(KEY, JSON.stringify(data));
+    if (!_skipAutopush && _gtoken && _gauto) {
+      clearTimeout(window._gdrivePushDebounce);
+      window._gdrivePushDebounce = setTimeout(() => gdrivePush(true), 2000);
+    }
     return true;
   } catch(e) {
     if (e.name === 'QuotaExceededError') toast('⚠ Armazenamento cheio! Exporte backup.', 'bad');
@@ -1206,8 +1210,8 @@ async function gdrivePull(silent = false) {
       const local = load();
       const remotIds = new Set(remoto.temas.map(t => t.id));
       const soLocais = local.temas.filter(t => !remotIds.has(t.id));
-      // Salva direto no localStorage sem triggerar auto-push
-      try { localStorage.setItem(KEY, JSON.stringify({ temas: [...remoto.temas, ...soLocais] })); } catch(e) {}
+      // Salva direto sem triggerar auto-push (evita loop)
+      try { salvar({ temas: [...remoto.temas, ...soLocais] }, true); } catch(e) {}
       renderHoje();
       renderLista();
     }
@@ -1224,15 +1228,7 @@ async function gdrivePull(silent = false) {
   }
 }
 
-// ── Auto-push: intercepta localStorage diretamente para evitar recursão ──
-const _lsSetOriginal = localStorage.setItem.bind(localStorage);
-localStorage.setItem = function(k, v) {
-  _lsSetOriginal(k, v);
-  if (k === KEY && _gtoken && _gauto) {
-    clearTimeout(window._gdrivePushDebounce);
-    window._gdrivePushDebounce = setTimeout(() => gdrivePush(true), 2000);
-  }
-};
+// (auto-push integrado diretamente na função salvar acima)
 
 // ── Reconecta automaticamente ao carregar a página ────────────────────
 // Usa prompt:'none' para reconectar sem popup se já tiver sessão Google ativa
