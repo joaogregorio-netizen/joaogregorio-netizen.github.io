@@ -858,7 +858,7 @@ function registrar(id, desemp) {
   const tipos = { ruim: 'bad', medio: 'ok', bom: 'ok' };
   toast(msgs[desemp], tipos[desemp]);
 
-  setTimeout(() => { _reg.delete(id); renderHoje(); }, 500);
+  setTimeout(() => { _reg.delete(id); renderHoje(); renderLista(); }, 600);
 }
 
 // ─── RENDER LISTA ─────────────────────────────────────────────────────────────
@@ -1059,11 +1059,11 @@ document.getElementById('inp-nome').addEventListener('keydown', e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharModal(); });
 
-// ─── GOOGLE DRIVE SYNC ───────────────────────────────────────────────────────
+// ─── GOOGLE DRIVE SYNC (v2 — bugs corrigidos) ────────────────────────────────
 // Para usar: crie um projeto em console.cloud.google.com,
 // ative a "Google Drive API", crie credenciais OAuth 2.0 (tipo "Aplicativo da Web")
 // e cole o Client ID abaixo.
-const GDRIVE_CLIENT_ID = '696264557408-8etvocqrkno6p8jni26u5vm8qofd93nl.apps.googleusercontent.com';
+const GDRIVE_CLIENT_ID = '171301925143-fjk46tqonev40fi8sdk5b18uvf6g4uqg.apps.googleusercontent.com';
 const GDRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
 const GDRIVE_FILENAME = 'revisao_espacada_data.json';
 const GDRIVE_SPACE = 'appDataFolder'; // pasta oculta, só o app acessa
@@ -1187,7 +1187,12 @@ async function gdrivePull(silent = false) {
   syncSetBusy(true);
   try {
     if (!_gfileId) await gdriveGetFileId();
-    if (!_gfileId) { syncSetStatus('Nenhum dado no Drive ainda.', ''); syncSetBusy(false); return; }
+    if (!_gfileId) {
+      syncSetStatus('Nenhum dado no Drive ainda.', '');
+      syncSetBusy(false);
+      ['btn-push','btn-pull'].forEach(id => { const el=document.getElementById(id); if(el) el.disabled=false; });
+      return;
+    }
 
     const r = await fetch(
       `https://www.googleapis.com/drive/v3/files/${_gfileId}?alt=media`,
@@ -1196,14 +1201,13 @@ async function gdrivePull(silent = false) {
     if (!r.ok) throw new Error(r.status);
     const remoto = await r.json();
 
-    // Merge inteligente: ganha o lado com mais temas ou mais recente por ID
-    const local = load();
     if (remoto.temas && remoto.temas.length > 0) {
-      // Usa remoto como base, mas preserva temas locais que não existem no remoto
+      // Merge: remoto é base, preserva temas locais ausentes no remoto
+      const local = load();
       const remotIds = new Set(remoto.temas.map(t => t.id));
-      const sóLocais = local.temas.filter(t => !remotIds.has(t.id));
-      const merged = { temas: [...remoto.temas, ...sóLocais] };
-      salvar(merged);
+      const soLocais = local.temas.filter(t => !remotIds.has(t.id));
+      // Salva direto no localStorage sem triggerar auto-push
+      try { localStorage.setItem(KEY, JSON.stringify({ temas: [...remoto.temas, ...soLocais] })); } catch(e) {}
       renderHoje();
       renderLista();
     }
@@ -1220,43 +1224,58 @@ async function gdrivePull(silent = false) {
   }
 }
 
-// ── Auto-push após cada salvarTema / registrar ─────────────────────────
+// ── Wrapper de salvar com auto-push ───────────────────────────────────
+// IMPORTANTE: deve vir DEPOIS das funções gdrive para não criar loop
 const _salvarOriginal = salvar;
 function salvar(data) {
   const ok = _salvarOriginal(data);
   if (_gtoken && _gauto) {
     clearTimeout(salvar._debounce);
-    salvar._debounce = setTimeout(() => gdrivePush(true), 1500);
+    salvar._debounce = setTimeout(() => gdrivePush(true), 2000);
   }
   return ok;
 }
 
-// ── Reconecta silenciosamente se já tinha logado antes ────────────────
-window.addEventListener('load', () => {
-  if (localStorage.getItem('gdrive_token_hint') && window.google) {
-    // Tenta renovar token silenciosamente (sem popup)
-    setTimeout(() => {
-      try {
-        google.accounts.oauth2.initTokenClient({
-          client_id: GDRIVE_CLIENT_ID,
-          scope: GDRIVE_SCOPE,
-          prompt: '',
-          callback: async (resp) => {
-            if (resp.error || !resp.access_token) return;
-            _gtoken = resp.access_token;
-            document.getElementById('btn-login').style.display  = 'none';
-            document.getElementById('btn-push').style.display   = '';
-            document.getElementById('btn-pull').style.display   = '';
-            document.getElementById('btn-logout').style.display = '';
-            syncSetStatus('Drive reconectado automaticamente', 'ok');
-            await gdriveGetFileId();
-            if (_gfileId) await gdrivePull(true);
-          },
-        }).requestAccessToken({ prompt: '' });
-      } catch(e) { /* silencioso */ }
-    }, 800);
+// ── Reconecta automaticamente ao carregar a página ────────────────────
+// Usa prompt:'none' para reconectar sem popup se já tiver sessão Google ativa
+function tentarReconectar() {
+  if (!window.google || !window.google.accounts) {
+    // Biblioteca ainda não carregou, tenta de novo em 500ms
+    setTimeout(tentarReconectar, 500);
+    return;
   }
-});
+  if (!localStorage.getItem('gdrive_token_hint')) return; // nunca conectou
+
+  try {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: GDRIVE_CLIENT_ID,
+      scope: GDRIVE_SCOPE,
+      prompt: 'none', // sem popup — falha silenciosamente se não tiver sessão
+      callback: async (resp) => {
+        if (resp.error || !resp.access_token) {
+          // Sessão expirou: mostra botão de login normalmente
+          syncSetStatus('Clique para reconectar ao Drive', '');
+          return;
+        }
+        _gtoken = resp.access_token;
+        document.getElementById('btn-login').style.display  = 'none';
+        document.getElementById('btn-push').style.display   = '';
+        document.getElementById('btn-pull').style.display   = '';
+        document.getElementById('btn-logout').style.display = '';
+        syncSetStatus('Drive reconectado ✓', 'ok');
+        await gdriveGetFileId();
+        if (_gfileId) await gdrivePull(true);
+        else await gdrivePush(true);
+      },
+    });
+    client.requestAccessToken({ prompt: 'none' });
+  } catch(e) {
+    syncSetStatus('Clique para conectar ao Drive', '');
+  }
+}
+
+// Aguarda DOM + script Google carregarem
+window.addEventListener('load', () => setTimeout(tentarReconectar, 600));
 
 initDefault();
 renderHoje();
