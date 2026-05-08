@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<!-- saved from url=(0060)file:///C:/Users/joaop/Downloads/revisao_espacada%20(9).html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revisão Espaçada</title>
+<style>
+:root {
+  --bg: #0f0f0d;
+  --card: #181815;
+  --border: #2a2a26;
+  --text: #e8e6df;
+  --muted: #6b6960;
+  --accent: #c8f04a;
+  --red: #ff5a4a;
+  --yellow: #f0c040;
+  --green: #4af090;
+  --mono: 'Courier New', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* NAV */
+nav {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: var(--bg); z-index: 10;
+}
+nav button {
+  flex: 1; padding: 14px; background: none; border: none; color: var(--muted);
+  font-size: 14px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all .15s;
+}
+nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* VIEWS */
+.view { display: none; padding: 20px 16px; max-width: 600px; margin: 0 auto; }
+.view.active { display: block; }
+
+/* HEADER HOJE */
+.hoje-header { margin-bottom: 20px; }
+.hoje-header h1 { font-size: 22px; font-weight: 700; }
+.hoje-header p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+/* CARD DE TEMA */
+.tema-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px; margin-bottom: 10px;
+}
+.tema-card.done { opacity: 0.4; pointer-events: none; }
+.tema-nome { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.tema-meta {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px;
+  font-size: 11px; color: var(--muted); font-family: var(--mono);
+}
+.tag {
+  padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 700; font-family: var(--mono);
+}
+.tag-ped { background: #0f6040; color: #4af090; }
+.tag-go  { background: #5a1a40; color: #f04ab0; }
+.tag-cm  { background: #0a3a60; color: #4ab8f0; }
+.tag-cx  { background: #5a2808; color: #f0844a; }
+.tag-prev{ background: #1a4008; color: #90d040; }
+.tag-peso-alta  { background: #ff5a4a22; color: var(--red);    border: 1px solid #ff5a4a44; }
+.tag-peso-media { background: #f0c04022; color: var(--yellow); border: 1px solid #f0c04044; }
+.tag-peso-baixa { background: #4af09022; color: var(--green);  border: 1px solid #4af09044; }
+/* STEP 0 */
+.tag-step0 { background: #b04af020; color: #d070f0; border: 1px solid #b04af040; }
+
+/* BOTÕES DE DESEMPENHO */
+.btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.btn-desemp {
+  padding: 10px 4px; border-radius: 8px; border: 1.5px solid; cursor: pointer;
+  font-size: 11px; font-weight: 700; font-family: var(--mono); background: transparent;
+  text-align: center; transition: all .12s; line-height: 1.4;
+}
+.btn-ruim   { color: var(--red);    border-color: var(--red); }
+.btn-ruim:hover   { background: var(--red);    color: #000; }
+.btn-medio  { color: var(--yellow); border-color: var(--yellow); }
+.btn-medio:hover  { background: var(--yellow); color: #000; }
+.btn-bom    { color: var(--green);  border-color: var(--green); }
+.btn-bom:hover    { background: var(--green);  color: #000; }
+
+/* FLASH */
+@keyframes flash-r { 0%{background:transparent} 40%{background:#ff5a4a25} 100%{background:transparent} }
+@keyframes flash-y { 0%{background:transparent} 40%{background:#f0c04020} 100%{background:transparent} }
+@keyframes flash-g { 0%{background:transparent} 40%{background:#4af09025} 100%{background:transparent} }
+.flash-r { animation: flash-r .5s ease; }
+.flash-y { animation: flash-y .5s ease; }
+.flash-g { animation: flash-g .5s ease; }
+
+/* VAZIO */
+.vazio { text-align: center; padding: 48px 20px; color: var(--muted); font-size: 14px; line-height: 1.8; }
+.vazio strong { color: var(--text); display: block; font-size: 18px; margin-bottom: 8px; }
+
+/* PRÓXIMAS */
+.proximas-titulo { font-size: 11px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted); margin: 24px 0 10px; }
+
+/* LISTA */
+.lista-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.lista-header h2 { font-size: 18px; font-weight: 700; }
+.btn-add {
+  padding: 8px 14px; background: var(--accent); color: #000;
+  border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.btn-add:hover { background: #d4f870; }
+
+/* FILTRO */
+.filtro { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.filtro button {
+  padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border);
+  background: none; color: var(--muted); font-size: 12px; cursor: pointer; transition: all .12s;
+}
+.filtro button.active { background: var(--card); color: var(--text); border-color: var(--text); }
+
+/* LISTA CARD */
+.lista-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 13px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
+}
+.lista-card-info { flex: 1; }
+.lista-card-nome { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+.lista-card-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.lista-card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; margin-left: 12px; }
+.quando {
+  font-size: 11px; font-family: var(--mono); font-weight: 700; padding: 3px 8px;
+  border-radius: 6px; white-space: nowrap;
+}
+.quando-atrasado { background: #ff5a4a22; color: var(--red); border: 1px solid #ff5a4a44; }
+.quando-hoje     { background: #f0c04022; color: var(--yellow); border: 1px solid #f0c04044; }
+.quando-breve    { background: #c8f04a22; color: var(--accent); border: 1px solid #c8f04a44; }
+.quando-futuro   { background: #2a2a26;   color: var(--muted); }
+.taxa { font-size: 10px; font-family: var(--mono); color: var(--muted); }
+.btn-del {
+  background: none; border: 1px solid var(--border); color: var(--muted);
+  padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer;
+}
+.btn-del:hover { border-color: var(--red); color: var(--red); }
+
+/* BOTÕES INLINE NA LISTA */
+.btns-lista { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 8px; }
+.btn-desemp-sm {
+  padding: 6px 2px; border-radius: 7px; border: 1.5px solid; cursor: pointer;
+  font-size: 10px; font-weight: 700; font-family: var(--mono); background: transparent;
+  text-align: center; transition: all .12s; line-height: 1.3;
+}
+.btn-desemp-sm.btn-ruim   { color: var(--red);    border-color: var(--red); }
+.btn-desemp-sm.btn-ruim:hover   { background: var(--red);    color: #000; }
+.btn-desemp-sm.btn-medio  { color: var(--yellow); border-color: var(--yellow); }
+.btn-desemp-sm.btn-medio:hover  { background: var(--yellow); color: #000; }
+.btn-desemp-sm.btn-bom    { color: var(--green);  border-color: var(--green); }
+.btn-desemp-sm.btn-bom:hover    { background: var(--green);  color: #000; }
+
+.btn-responder {
+  background: none; border: 1px solid var(--border); color: var(--accent);
+  padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer;
+  font-family: var(--mono); font-weight: 700;
+}
+.btn-responder:hover { border-color: var(--accent); background: #c8f04a18; }
+
+/* MODAL */
+.overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.75);
+  display: none; align-items: center; justify-content: center; z-index: 50; padding: 20px;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 24px; width: 100%; max-width: 400px;
+}
+.modal h3 { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
+.campo { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+.campo label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.campo input, .campo select {
+  background: var(--bg); border: 1px solid var(--border); color: var(--text);
+  padding: 9px 12px; border-radius: 8px; font-size: 13px; outline: none; width: 100%;
+}
+.campo input:focus, .campo select:focus { border-color: var(--accent); }
+.campo select option { background: var(--card); }
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
+.btn-cancel {
+  padding: 9px 16px; background: none; border: 1px solid var(--border);
+  color: var(--muted); border-radius: 8px; font-size: 13px; cursor: pointer;
+}
+.btn-confirm {
+  padding: 9px 16px; background: var(--accent); border: none;
+  color: #000; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 20px; right: 20px; padding: 11px 16px;
+  border-radius: 9px; font-size: 12px; font-weight: 700; font-family: var(--mono);
+  opacity: 0; transform: translateY(10px); transition: all .25s; z-index: 100; max-width: 280px;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast-info  { background: var(--accent); color: #000; }
+.toast-ok    { background: #4af09022; color: var(--green); border: 1px solid var(--green); }
+.toast-bad   { background: #ff5a4a22; color: var(--red);   border: 1px solid var(--red); }
+
+/* ── GOOGLE DRIVE SYNC ── */
+#sync-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px; background: #111110; border-bottom: 1px solid var(--border);
+  font-size: 12px; gap: 8px; flex-wrap: wrap;
+}
+#sync-status { color: var(--muted); display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+#sync-status span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--muted); }
+.sync-dot.ok  { background: var(--green); }
+.sync-dot.err { background: var(--red); }
+.sync-dot.busy { background: var(--yellow); animation: pulse .8s infinite alternate; }
+@keyframes pulse { from { opacity:.4 } to { opacity:1 } }
+.btn-sync {
+  background: none; border: 1px solid var(--border); color: var(--text);
+  padding: 5px 11px; border-radius: 7px; font-size: 11px; cursor: pointer;
+  font-family: var(--mono); font-weight: 700; white-space: nowrap;
+  transition: all .12s;
+}
+.btn-sync:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sync.primary { border-color: var(--accent); color: var(--accent); }
+.btn-sync:disabled { opacity: .4; cursor: default; }
+</style>
+</head>
+<body>
+
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async></script>
+
+<!-- SYNC BAR -->
+<div id="sync-bar">
+  <div id="sync-status">
+    <div class="sync-dot" id="sync-dot"></div>
+    <span id="sync-msg">Google Drive: desconectado</span>
+  </div>
+  <div style="display:flex;gap:6px">
+    <button class="btn-sync primary" id="btn-login"  onclick="gdriveLogin()">🔗 Conectar Drive</button>
+    <button class="btn-sync" id="btn-push"  onclick="gdrivePush()" style="display:none" title="Salvar no Drive">⬆ Salvar</button>
+    <button class="btn-sync" id="btn-pull"  onclick="gdrivePull()" style="display:none" title="Carregar do Drive">⬇ Carregar</button>
+    <button class="btn-sync" id="btn-logout" onclick="gdriveLogout()" style="display:none;color:var(--muted)">Sair</button>
+  </div>
+</div>
+
+<nav>
+  <button class="active" onclick="mostrarView(&#39;hoje&#39;, this)">📅 Hoje</button>
+  <button onclick="mostrarView(&#39;lista&#39;, this)" class="">📋 Todos os temas</button>
+</nav>
+
+<!-- VIEW HOJE -->
+<div class="view active" id="view-hoje">
+  <div class="hoje-header">
+    <h1 id="titulo-hoje">1 tema para revisar</h1>
+    <p id="subtitulo-hoje">quarta-feira, 6 de maio</p>
+    <div id="prova-bar" style="margin-top:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;font-family:var(--mono);font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em">Residência USP-SP</span>
+        <span id="prova-dias" style="font-size:12px;font-family:var(--mono);font-weight:700;color:var(--accent)"></span>
+      </div>
+      <div style="background:var(--border);border-radius:4px;height:4px;overflow:hidden">
+        <div id="prova-barra" style="height:100%;background:var(--accent);border-radius:4px;transition:width .5s"></div>
+      </div>
+      <div id="prova-alerta" style="font-size:11px;color:var(--red);display:none"></div>
+    </div>
+  </div>
+  <div id="lista-hoje"><div class="tema-card" id="card-1777919755955">
+        <div class="tema-nome">Neonatologia — desconforto resp.</div>
+        <div class="tema-meta">
+          <span class="tag tag-ped">Ped</span>
+          <span class="tag tag-peso-alta">🔴 Alta</span>
+          
+          <span>📚 sessão 3</span>
+          <span style="color:var(--red)">✓ 0%</span>
+          
+        </div>
+        <div class="btns">
+          <button class="btn-desemp btn-ruim" onclick="registrar(1777919755955,&#39;ruim&#39;)">&lt;60%<br>Errei</button>
+          <button class="btn-desemp btn-medio" onclick="registrar(1777919755955,&#39;medio&#39;)">60–80%<br>Parcial</button>
+          <button class="btn-desemp btn-bom" onclick="registrar(1777919755955,&#39;bom&#39;)">&gt;80%<br>Acertei</button>
+        </div>
+      </div></div>
+  <div class="proximas-titulo" id="label-proximas" style="display: block;">Próximas revisões</div>
+  <div id="lista-proximas"><div class="lista-card" style="opacity:.6">
+        <div class="lista-card-info">
+          <div class="lista-card-nome" style="font-size:13px">SCA</div>
+          <div class="lista-card-meta"><span class="tag tag-cm">CM</span><span class="tag tag-peso-alta">🔴 Alta</span></div>
+        </div>
+        <div class="quando quando-breve">em 1d</div>
+      </div><div class="lista-card" style="opacity:.6">
+        <div class="lista-card-info">
+          <div class="lista-card-nome" style="font-size:13px">Coloprocto e CCR</div>
+          <div class="lista-card-meta"><span class="tag tag-cx">Cirurgia</span><span class="tag tag-peso-media">🟡 Média</span></div>
+        </div>
+        <div class="quando quando-breve">em 1d</div>
+      </div><div class="lista-card" style="opacity:.6">
+        <div class="lista-card-info">
+          <div class="lista-card-nome" style="font-size:13px">Hérnias</div>
+          <div class="lista-card-meta"><span class="tag tag-cx">Cirurgia</span><span class="tag tag-peso-alta">🔴 Alta</span></div>
+        </div>
+        <div class="quando quando-breve">em 2d</div>
+      </div><div class="lista-card" style="opacity:.6">
+        <div class="lista-card-info">
+          <div class="lista-card-nome" style="font-size:13px">Cirurgia Vascular</div>
+          <div class="lista-card-meta"><span class="tag tag-cx">Cirurgia</span><span class="tag tag-peso-alta">🔴 Alta</span></div>
+        </div>
+        <div class="quando quando-breve">em 2d</div>
+      </div><div class="lista-card" style="opacity:.6">
+        <div class="lista-card-info">
+          <div class="lista-card-nome" style="font-size:13px">Puericultura — crescimento e DNPM</div>
+          <div class="lista-card-meta"><span class="tag tag-ped">Ped</span><span class="tag tag-peso-alta">🔴 Alta</span></div>
+        </div>
+        <div class="quando quando-breve">em 2d</div>
+      </div></div>
+</div>
+
+<!-- VIEW LISTA -->
+<div class="view" id="view-lista">
+  <div class="lista-header">
+    <h2>Todos os temas</h2>
+    <button class="btn-add" onclick="abrirModal()">+ Adicionar</button>
+  </div>
+  <div class="filtro" id="filtro-area">
+    <button class="" onclick="setFiltro(&#39;&#39;, this)">Todos</button>
+    <button onclick="setFiltro(&#39;ped&#39;, this)">Ped</button>
+    <button onclick="setFiltro(&#39;go&#39;, this)">GO</button>
+    <button onclick="setFiltro(&#39;cm&#39;, this)">CM</button>
+    <button onclick="setFiltro(&#39;cx&#39;, this)" class="active">Cirurgia</button>
+    <button onclick="setFiltro(&#39;prev&#39;, this)">Prev</button>
+  </div>
+  <div id="lista-temas"><div class="lista-card" id="lcard-1778100284269" style="flex-direction:column;align-items:stretch;gap:0">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="lista-card-info">
+              <div class="lista-card-nome">Coloprocto e CCR <span class="tag tag-step0" style="font-size:9px">S0</span></div>
+              <div class="lista-card-meta">
+                <span class="tag tag-cx">Cirurgia</span>
+                <span class="tag tag-peso-media">🟡 Média</span>
+                <span class="taxa" style="color:var(--yellow)">✓ 67% · 3 rev.</span>
+              </div>
+            </div>
+            <div class="lista-card-right">
+              <span class="quando quando-breve">em 1d</span>
+              <button class="btn-responder" onclick="toggleBtnsLista(1778100284269)">responder</button>
+              <button class="btn-del" onclick="renomear(1778100284269)">✏ renomear</button>
+              <button class="btn-del" onclick="deletar(1778100284269)">remover</button>
+            </div>
+          </div>
+          <div id="btns-1778100284269" style="display:none" class="btns-lista">
+              <button class="btn-desemp-sm btn-ruim" onclick="registrarLista(1778100284269,&#39;ruim&#39;)">&lt;60% Errei</button>
+              <button class="btn-desemp-sm btn-medio" onclick="registrarLista(1778100284269,&#39;medio&#39;)">60–80% Parcial</button>
+              <button class="btn-desemp-sm btn-bom" onclick="registrarLista(1778100284269,&#39;bom&#39;)">&gt;80% Acertei</button>
+            </div>
+        </div><div class="lista-card" id="lcard-1777919755937" style="flex-direction:column;align-items:stretch;gap:0">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="lista-card-info">
+              <div class="lista-card-nome">Hérnias</div>
+              <div class="lista-card-meta">
+                <span class="tag tag-cx">Cirurgia</span>
+                <span class="tag tag-peso-alta">🔴 Alta</span>
+                <span class="taxa" style="color:var(--red)">✓ 0% · 2 rev.</span>
+              </div>
+            </div>
+            <div class="lista-card-right">
+              <span class="quando quando-breve">em 2d</span>
+              <button class="btn-responder" onclick="toggleBtnsLista(1777919755937)">responder</button>
+              <button class="btn-del" onclick="renomear(1777919755937)">✏ renomear</button>
+              <button class="btn-del" onclick="deletar(1777919755937)">remover</button>
+            </div>
+          </div>
+          <div id="btns-1777919755937" style="display:none" class="btns-lista">
+              <button class="btn-desemp-sm btn-ruim" onclick="registrarLista(1777919755937,&#39;ruim&#39;)">&lt;60% Errei</button>
+              <button class="btn-desemp-sm btn-medio" onclick="registrarLista(1777919755937,&#39;medio&#39;)">60–80% Parcial</button>
+              <button class="btn-desemp-sm btn-bom" onclick="registrarLista(1777919755937,&#39;bom&#39;)">&gt;80% Acertei</button>
+            </div>
+        </div><div class="lista-card" id="lcard-1777919755949" style="flex-direction:column;align-items:stretch;gap:0">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="lista-card-info">
+              <div class="lista-card-nome">Cirurgia Vascular</div>
+              <div class="lista-card-meta">
+                <span class="tag tag-cx">Cirurgia</span>
+                <span class="tag tag-peso-alta">🔴 Alta</span>
+                <span class="taxa" style="color:var(--red)">✓ 0% · 2 rev.</span>
+              </div>
+            </div>
+            <div class="lista-card-right">
+              <span class="quando quando-breve">em 2d</span>
+              <button class="btn-responder" onclick="toggleBtnsLista(1777919755949)">responder</button>
+              <button class="btn-del" onclick="renomear(1777919755949)">✏ renomear</button>
+              <button class="btn-del" onclick="deletar(1777919755949)">remover</button>
+            </div>
+          </div>
+          <div id="btns-1777919755949" style="display:none" class="btns-lista">
+              <button class="btn-desemp-sm btn-ruim" onclick="registrarLista(1777919755949,&#39;ruim&#39;)">&lt;60% Errei</button>
+              <button class="btn-desemp-sm btn-medio" onclick="registrarLista(1777919755949,&#39;medio&#39;)">60–80% Parcial</button>
+              <button class="btn-desemp-sm btn-bom" onclick="registrarLista(1777919755949,&#39;bom&#39;)">&gt;80% Acertei</button>
+            </div>
+        </div><div class="lista-card" id="lcard-1777919755938" style="flex-direction:column;align-items:stretch;gap:0">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="lista-card-info">
+              <div class="lista-card-nome">Abdome agudo</div>
+              <div class="lista-card-meta">
+                <span class="tag tag-cx">Cirurgia</span>
+                <span class="tag tag-peso-alta">🔴 Alta</span>
+                <span class="taxa" style="color:var(--red)">✓ 50% · 2 rev.</span>
+              </div>
+            </div>
+            <div class="lista-card-right">
+              <span class="quando quando-breve">em 3d</span>
+              <button class="btn-responder" onclick="toggleBtnsLista(1777919755938)">responder</button>
+              <button class="btn-del" onclick="renomear(1777919755938)">✏ renomear</button>
+              <button class="btn-del" onclick="deletar(1777919755938)">remover</button>
+            </div>
+          </div>
+          <div id="btns-1777919755938" style="display:none" class="btns-lista">
+              <button class="btn-desemp-sm btn-ruim" onclick="registrarLista(1777919755938,&#39;ruim&#39;)">&lt;60% Errei</button>
+              <button class="btn-desemp-sm btn-medio" onclick="registrarLista(1777919755938,&#39;medio&#39;)">60–80% Parcial</button>
+              <button class="btn-desemp-sm btn-bom" onclick="registrarLista(1777919755938,&#39;bom&#39;)">&gt;80% Acertei</button>
+            </div>
+        </div><div class="lista-card" id="lcard-1777919755939" style="flex-direction:column;align-items:stretch;gap:0">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="lista-card-info">
+              <div class="lista-card-nome">Urologia geral</div>
+              <div class="lista-card-meta">
+                <span class="tag tag-cx">Cirurgia</span>
+                <span class="tag tag-peso-media">🟡 Média</span>
+                <span class="taxa" style="color:var(--red)">✓ 0% · 1 rev.</span>
+              </div>
+            </div>
+            <div class="lista-card-right">
+              <span class="quando quando-breve">em 3d</span>
+              <button class="btn-responder" onclick="toggleBtnsLista(1777919755939)">responder</button>
+              <button class="btn-del" onclick="renomear(1777919755939)">✏ renomear</button>
+              <button class="btn-del" onclick="deletar(1777919755939)">remover</button>
+            </div>
+          </div>
+          <div id="btns-1777919755939" style="display:none" class="btns-lista">
+              <button class="btn-desemp-sm btn-ruim" onclick="registrarLista(1777919755939,&#39;ruim&#39;)">&lt;60% Errei</button>
+              <button class="btn-desemp-sm btn-medio" onclick="registrarLista(1777919755939,&#39;medio&#39;)">60–80% Parcial</button>
+              <button class="btn-desemp-sm btn-bom" onclick="registrarLista(1777919755939,&#39;bom&#39;)">&gt;80% Acertei</button>
+            </div>
+        </div><div class="lista-card" id="lcard-1777919755944" style="flex-direction:column;align-items:stretch;gap:0">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="lista-card-info">
+              <div class="lista-card-nome">CAD geral</div>
+              <div class="lista-card-meta">
+                <span class="tag tag-cx">Cirurgia</span>
+                <span class="tag tag-peso-media">🟡 Média</span>
+                <span class="taxa" style="color:var(--red)">✓ 0% · 1 rev.</span>
+              </div>
+            </div>
+            <div class="lista-card-right">
+              <span class="quando quando-breve">em 4d</span>
+              <button class="btn-responder" onclick="toggleBtnsLista(1777919755944)">responder</button>
+              <button class="btn-del" onclick="renomear(1777919755944)">✏ renomear</button>
+              <button class="btn-del" onclick="deletar(1777919755944)">remover</button>
+            </div>
+          </div>
+          <div id="btns-1777919755944" style="display:none" class="btns-lista">
+              <button class="btn-desemp-sm btn-ruim" onclick="registrarLista(1777919755944,&#39;ruim&#39;)">&lt;60% Errei</button>
+              <button class="btn-desemp-sm btn-medio" onclick="registrarLista(1777919755944,&#39;medio&#39;)">60–80% Parcial</button>
+              <button class="btn-desemp-sm btn-bom" onclick="registrarLista(1777919755944,&#39;bom&#39;)">&gt;80% Acertei</button>
+            </div>
+        </div><div class="lista-card" id="lcard-1777919755948" style="flex-direction:column;align-items:stretch;gap:0">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="lista-card-info">
+              <div class="lista-card-nome">Cirurgia torácica</div>
+              <div class="lista-card-meta">
+                <span class="tag tag-cx">Cirurgia</span>
+                <span class="tag tag-peso-media">🟡 Média</span>
+                <span class="taxa" style="color:var(--red)">✓ 0% · 1 rev.</span>
+              </div>
+            </div>
+            <div class="lista-card-right">
+              <span class="quando quando-breve">em 6d</span>
+              <button class="btn-responder" onclick="toggleBtnsLista(1777919755948)">responder</button>
+              <button class="btn-del" onclick="renomear(1777919755948)">✏ renomear</button>
+              <button class="btn-del" onclick="deletar(1777919755948)">remover</button>
+            </div>
+          </div>
+          <div id="btns-1777919755948" style="display:none" class="btns-lista">
+              <button class="btn-desemp-sm btn-ruim" onclick="registrarLista(1777919755948,&#39;ruim&#39;)">&lt;60% Errei</button>
+              <button class="btn-desemp-sm btn-medio" onclick="registrarLista(1777919755948,&#39;medio&#39;)">60–80% Parcial</button>
+              <button class="btn-desemp-sm btn-bom" onclick="registrarLista(1777919755948,&#39;bom&#39;)">&gt;80% Acertei</button>
+            </div>
+        </div><div class="lista-card" id="lcard-1777919755936" style="flex-direction:column;align-items:stretch;gap:0">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="lista-card-info">
+              <div class="lista-card-nome">Trauma geral</div>
+              <div class="lista-card-meta">
+                <span class="tag tag-cx">Cirurgia</span>
+                <span class="tag tag-peso-alta">🔴 Alta</span>
+                <span class="taxa" style="color:var(--yellow)">✓ 67% · 3 rev.</span>
+              </div>
+            </div>
+            <div class="lista-card-right">
+              <span class="quando quando-futuro">em 8d</span>
+              <button class="btn-responder" onclick="toggleBtnsLista(1777919755936)">responder</button>
+              <button class="btn-del" onclick="renomear(1777919755936)">✏ renomear</button>
+              <button class="btn-del" onclick="deletar(1777919755936)">remover</button>
+            </div>
+          </div>
+          <div id="btns-1777919755936" style="display:none" class="btns-lista">
+              <button class="btn-desemp-sm btn-ruim" onclick="registrarLista(1777919755936,&#39;ruim&#39;)">&lt;60% Errei</button>
+              <button class="btn-desemp-sm btn-medio" onclick="registrarLista(1777919755936,&#39;medio&#39;)">60–80% Parcial</button>
+              <button class="btn-desemp-sm btn-bom" onclick="registrarLista(1777919755936,&#39;bom&#39;)">&gt;80% Acertei</button>
+            </div>
+        </div></div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)fecharModal()">
+  <div class="modal">
+    <h3>Adicionar tema</h3>
+    <div class="campo">
+      <label>Nome</label>
+      <input type="text" id="inp-nome" placeholder="ex: Trauma abdominal" autocomplete="off">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="campo">
+        <label>Área</label>
+        <select id="inp-area">
+          <option value="ped">Pediatria</option>
+          <option value="go">GO</option>
+          <option value="cm">Clínica Médica</option>
+          <option value="cx">Cirurgia</option>
+          <option value="prev">Preventiva</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label>Prioridade USP-SP</label>
+        <select id="inp-peso">
+          <option value="3">🔴 Alta</option>
+          <option value="2" selected="">🟡 Média</option>
+          <option value="1">🟢 Baixa</option>
+        </select>
+      </div>
+    </div>
+    <div class="campo">
+      <label>Primeira revisão</label>
+      <select id="inp-quando">
+        <option value="0">Hoje</option>
+        <option value="1" selected="">Amanhã</option>
+        <option value="3">Em 3 dias</option>
+        <option value="7">Em 7 dias</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="salvarTema()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast toast-ok" id="toast">Step 0: 1/2 ✓ — amanhã de novo!</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// ALGORITMO
+//
+// Intervalos base (dias) por sessão:
+//   sessão 1 → 1d, sessão 2 → 3d, sessão 3 → 7d, sessão 4 → 16d,
+//   sessão 5 → 35d, sessão 6+ → cresce com EaseFactor
+//
+// Modificadores aplicados ao intervalo:
+//   Desempenho <60%  (ruim)  → reseta ciclo para sessão 1, intervalo = 1d
+//   Desempenho 60-80%(médio) → intervalo base sem ajuste
+//   Desempenho >80%  (bom)   → intervalo × 1.8
+//
+//   Prioridade Alta (peso=3)  → intervalo × 0.6  (volta mais cedo)
+//   Prioridade Média (peso=2) → intervalo × 1.0
+//   Prioridade Baixa (peso=1) → intervalo × 1.4
+//
+// Step 0 (temas novos):
+//   Tema novo precisa de 2 × "bom" em dias DIFERENTES antes de entrar no SM-2.
+//   Qualquer "ruim" no Step 0 reseta os confirmados para 0.
+//   Temas pré-carregados têm step0=false (já foram estudados).
+//
+// Reset inteligente (Sugestão 7 original):
+//   Se errou E o intervalo anterior era >14 dias → reset suave (volta 1 nível)
+//   Se errou E o intervalo anterior era ≤14 dias → reset total (volta Step 0)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const KEY = 'rev_v6';
+
+// DATA LOCAL (sem UTC)
+function hoje() {
+  const d = new Date();
+  return `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
+}
+function p2(n) { return String(n).padStart(2,'0'); }
+function addDias(s, n) {
+  const [y,m,d] = s.split('-').map(Number);
+  const dt = new Date(y, m-1, d);
+  dt.setDate(dt.getDate() + n);
+  return `${dt.getFullYear()}-${p2(dt.getMonth()+1)}-${p2(dt.getDate())}`;
+}
+function diffDias(s) {
+  const hj = hoje().split('-').map(Number);
+  const dt = s.split('-').map(Number);
+  return Math.round((new Date(dt[0],dt[1]-1,dt[2]) - new Date(hj[0],hj[1]-1,hj[2])) / 86400000);
+}
+
+// Fisher-Yates shuffle
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// IDs únicos
+let _uid = Date.now();
+function uid() { return ++_uid; }
+
+// XSS
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// CÁLCULO DO PRÓXIMO INTERVALO
+const BASE = [1, 3, 7, 16, 35, 70, 120, 180];
+
+// ─── TETOS DE INTERVALO (regra 1) ────────────────────────────────────────────
+// Alta prioridade: máx 21 dias | Média: máx 45 dias | Baixa: sem teto
+const TETO_INTERVALO = { 3: 21, 2: 45, 1: Infinity };
+
+// ─── CADÊNCIA MÍNIMA MENSAL (regra 5) ────────────────────────────────────────
+// Alta prioridade aparece pelo menos 1x a cada 30 dias
+const CADENCIA_MIN = { 3: 30, 2: Infinity, 1: Infinity };
+
+function proximoIntervalo(t, desemp) {
+  const multDesemp = desemp === 'bom' ? 1.8 : desemp === 'medio' ? 1.0 : null;
+  const multPeso   = t.peso === 3 ? 0.6 : t.peso === 2 ? 1.0 : 1.4;
+
+  // ── Regra 2: Decaimento forçado por tempo sem ver ─────────────────────────
+  // Se o tema ficou 30+ dias sem ser revisado, penaliza o próximo intervalo
+  const ultimaRevisao = t.historico && t.historico.length > 0
+    ? t.historico[t.historico.length - 1].data : null;
+  const diasSemVer = ultimaRevisao ? Math.abs(diffDias(ultimaRevisao)) : 0;
+  const decaimento = diasSemVer >= 30 ? 0.5 : 1.0; // corta intervalo pela metade
+
+  // Ruim: reset inteligente
+  if (desemp === 'ruim') {
+    if ((t.ultimoIntervalo || 0) > 14) {
+      t.sessoes = Math.max(1, t.sessoes - 1);
+      return Math.max(2, Math.round(BASE[t.sessoes - 1] * multPeso));
+    } else {
+      t.sessoes = 0;
+      t.step0 = true;
+      t.step0ok = 0;
+      t.step0data = '';
+      return 1;
+    }
+  }
+
+  // Step 0: precisa de 2 "bom" em dias diferentes
+  if (t.step0) {
+    if (desemp === 'bom' && t.step0data !== hoje()) {
+      t.step0ok = (t.step0ok || 0) + 1;
+      t.step0data = hoje();
+      if (t.step0ok >= 2) {
+        t.step0 = false;
+        t.sessoes = 1;
+        return Math.max(1, Math.round(BASE[0] * 1.8 * multPeso));
+      }
+    }
+    return 1;
+  }
+
+  // SM-2 normal
+  const idx = Math.min(t.sessoes, BASE.length - 1);
+  let intervalo = Math.max(1, Math.round(BASE[idx] * multDesemp * multPeso * decaimento));
+  t.sessoes++;
+
+  // ── Regra 1: Aplica teto de intervalo por prioridade ─────────────────────
+  const teto = TETO_INTERVALO[t.peso] || Infinity;
+  intervalo = Math.min(intervalo, teto);
+
+  // ── Regra 5: Garante cadência mínima mensal para alta prioridade ──────────
+  const cadencia = CADENCIA_MIN[t.peso] || Infinity;
+  intervalo = Math.min(intervalo, cadencia);
+
+  return intervalo;
+}
+
+// STORAGE
+function load() {
+  try {
+    const r = localStorage.getItem(KEY);
+    if (!r) return { temas: [] };
+    return JSON.parse(r);
+  } catch { return { temas: [] }; }
+}
+function salvar(data, _skipAutopush = false) {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(data));
+    if (!_skipAutopush && _gtoken && _gauto) {
+      clearTimeout(window._gdrivePushDebounce);
+      window._gdrivePushDebounce = setTimeout(() => gdrivePush(true), 2000);
+    }
+    return true;
+  } catch(e) {
+    if (e.name === 'QuotaExceededError') toast('⚠ Armazenamento cheio! Exporte backup.', 'bad');
+    return false;
+  }
+}
+
+// TEMAS PRÉ-CARREGADOS (step0 = false — já revisados antes)
+// Temas com datas de revisão fixas (dias a partir de hoje)
+// Hoje = 3 temas (conforme pedido); demais dias = 1 tema/dia, áreas intercaladas
+const DEFAULT = [
+  // ── Hoje ──────────────────────────────────────────────────────────────────
+  {nome:'CAD — coloproctologia e CCR',             area:'cx',  peso:3, dias:0},
+  {nome:'Vascular',                                area:'cx',  peso:3, dias:0},
+  {nome:'Puericultura — crescimento e DNPM',       area:'ped', peso:3, dias:0},
+  // ── 1 tema/dia a partir de amanhã ────────────────────────────────────────
+  {nome:'DM — classificação, tto, complicações',   area:'cm',  peso:3, dias:1},
+  {nome:'Anticoncepção',                           area:'go',  peso:3, dias:2},
+  {nome:'Neonatologia — reanimação e triagens',    area:'ped', peso:3, dias:3},
+  {nome:'Taquiarritmia e bradiarritmia',           area:'cm',  peso:3, dias:4},
+  {nome:'Sangramento gestacional',                 area:'go',  peso:3, dias:5},
+  {nome:'Neonatologia — icterícia',                area:'ped', peso:3, dias:6},
+  {nome:'Trauma — abdominal e torácico',           area:'cx',  peso:3, dias:7},
+  {nome:'Hérnias',                                 area:'cx',  peso:3, dias:8},
+  {nome:'Abdome agudo',                            area:'cx',  peso:3, dias:9},
+  {nome:'Choque — abordagem e tipos',              area:'cm',  peso:3, dias:10},
+  {nome:'Gineco endócrina — amenorreias e SOP',    area:'go',  peso:3, dias:11},
+  {nome:'Neonatologia — infecções congênitas',     area:'ped', peso:3, dias:12},
+  {nome:'Sífilis e ISTs',                          area:'cm',  peso:3, dias:13},
+  {nome:'Pré-natal e modificações gravídicas',     area:'go',  peso:3, dias:14},
+  {nome:'Neonatologia — sepse e desconforto resp.',area:'ped', peso:3, dias:15},
+  {nome:'Vacinação pediátrica',                    area:'ped', peso:3, dias:16},
+  {nome:'DIP e endometriose',                      area:'go',  peso:2, dias:17},
+  {nome:'CAD — esôfago',                           area:'cx',  peso:2, dias:18},
+  {nome:'Climatério e TRH',                        area:'go',  peso:2, dias:19},
+  {nome:'CAD — estômago e CA gástrico',            area:'cx',  peso:2, dias:20},
+  {nome:'Puberdade precoce e tardia',              area:'go',  peso:2, dias:21},
+  {nome:'Puericultura — aleitamento',              area:'ped', peso:2, dias:22},
+  {nome:'CAD — pâncreas e vias biliares',          area:'cx',  peso:2, dias:23},
+  {nome:'Urologia',                                area:'cx',  peso:2, dias:24},
+  {nome:'CAD — fígado e tumores hepáticos',        area:'cx',  peso:2, dias:25},
+  {nome:'Cirurgia torácica',                       area:'cx',  peso:2, dias:26},
+  {nome:'Processo saúde-doença e prevenção',       area:'prev',peso:2, dias:27},
+  {nome:'Rastreamento e prevenção quaternária',    area:'prev',peso:2, dias:28},
+];
+
+function initDefault() {
+  const data = load();
+  // Usa flag explícita para nunca re-criar temas automaticamente
+  if (data.temas.length > 0 || localStorage.getItem(KEY + '_init')) return data;
+  localStorage.setItem(KEY + '_init', '1');
+  DEFAULT.forEach(t => {
+    data.temas.push({
+      id: uid(),
+      nome: t.nome,
+      area: t.area,
+      peso: t.peso,
+      sessoes: 1,
+      step0: false,
+      step0ok: 0,
+      step0data: '',
+      proximaRevisao: addDias(hoje(), t.dias),
+      ultimoIntervalo: Math.max(t.dias, 1),
+      historico: [{ data: addDias(hoje(), -7), desemp: 'medio' }],
+      acertos: 0,
+      total: 1,
+    });
+  });
+  salvar(data);
+  return data;
+}
+
+// Reseta e recarrega temas padrão (para aplicar nova lista em dados já existentes)
+function resetTemas() {
+  if (!confirm('Isso vai substituir TODOS os temas pelos padrão reformulados. Continuar?')) return;
+  const data = { temas: [] };
+  DEFAULT.forEach(t => {
+    data.temas.push({
+      id: uid(),
+      nome: t.nome,
+      area: t.area,
+      peso: t.peso,
+      sessoes: 1,
+      step0: false,
+      step0ok: 0,
+      step0data: '',
+      proximaRevisao: addDias(hoje(), t.dias),
+      ultimoIntervalo: Math.max(t.dias, 1),
+      historico: [{ data: addDias(hoje(), -7), desemp: 'medio' }],
+      acertos: 0,
+      total: 1,
+    });
+  });
+  salvar(data, true);
+  renderHoje();
+  renderLista();
+  toast('Temas redefinidos!', 'ok');
+  if (_gtoken) setTimeout(() => gdrivePush(true), 1000);
+}
+
+// ─── RENDER HOJE ──────────────────────────────────────────────────────────────
+function renderHoje() {
+  const data = load();
+  const hj = hoje();
+  // Separa atrasados (prioridade) dos de hoje
+  const atrasados = data.temas
+    .filter(t => t.proximaRevisao < hj)
+    .sort((a, b) => {
+      const dA = diffDias(a.proximaRevisao), dB = diffDias(b.proximaRevisao);
+      if (dA !== dB) return dA - dB;
+      return b.peso - a.peso;
+    });
+  const deHoje = shuffle(data.temas.filter(t => t.proximaRevisao === hj));
+  const pendentes = [...atrasados, ...deHoje];
+
+  const titulo = document.getElementById('titulo-hoje');
+  const sub = document.getElementById('subtitulo-hoje');
+  titulo.textContent = pendentes.length > 0
+    ? `${pendentes.length} tema${pendentes.length > 1 ? 's' : ''} para revisar`
+    : 'Tudo em dia!';
+  sub.textContent = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long' });
+
+  const listaHoje = document.getElementById('lista-hoje');
+  if (pendentes.length === 0) {
+    listaHoje.innerHTML = `<div class="vazio">
+      <strong>Nenhuma revisão pendente 🎉</strong>
+      Adicione novos temas quando ver uma aula FAST.
+    </div>`;
+  } else {
+    listaHoje.innerHTML = pendentes.map(t => {
+      const diff = diffDias(t.proximaRevisao);
+      const atrasado = diff < 0 ? `<span style="color:var(--red);font-size:11px">⚠ ${Math.abs(diff)}d atrasado</span>` : '';
+      const taxa = t.total > 0 ? Math.round(t.acertos / t.total * 100) : 0;
+      const taxaC = taxa >= 80 ? 'var(--green)' : taxa >= 60 ? 'var(--yellow)' : 'var(--red)';
+      const step0badge = t.step0 ? `<span class="tag tag-step0">STEP 0 · ${t.step0ok||0}/2</span>` : '';
+      return `<div class="tema-card" id="card-${t.id}">
+        <div class="tema-nome">${esc(t.nome)}</div>
+        <div class="tema-meta">
+          ${areaTag(t.area)}
+          ${pesoTag(t.peso)}
+          ${step0badge}
+          <span>📚 sessão ${t.sessoes+1}</span>
+          <span style="color:${taxaC}">✓ ${taxa}%</span>
+          ${atrasado}
+        </div>
+        <div class="btns">
+          <button class="btn-desemp btn-ruim"  onclick="registrar(${t.id},'ruim')">&lt;60%<br>Errei</button>
+          <button class="btn-desemp btn-medio" onclick="registrar(${t.id},'medio')">60–80%<br>Parcial</button>
+          <button class="btn-desemp btn-bom"   onclick="registrar(${t.id},'bom')">&gt;80%<br>Acertei</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Próximas revisões (próximos 7 dias)
+  const proximas = data.temas
+    .filter(t => { const d = diffDias(t.proximaRevisao); return d > 0 && d <= 7; })
+    .sort((a, b) => a.proximaRevisao.localeCompare(b.proximaRevisao))
+    .slice(0, 5);
+
+  const labelProx = document.getElementById('label-proximas');
+  const listaProx = document.getElementById('lista-proximas');
+  if (proximas.length > 0) {
+    labelProx.style.display = 'block';
+    listaProx.innerHTML = proximas.map(t => {
+      const d = diffDias(t.proximaRevisao);
+      return `<div class="lista-card" style="opacity:.6">
+        <div class="lista-card-info">
+          <div class="lista-card-nome" style="font-size:13px">${esc(t.nome)}</div>
+          <div class="lista-card-meta">${areaTag(t.area)}${pesoTag(t.peso)}</div>
+        </div>
+        <div class="quando quando-breve">em ${d}d</div>
+      </div>`;
+    }).join('');
+  } else {
+    labelProx.style.display = 'none';
+    listaProx.innerHTML = '';
+  }
+}
+
+// ─── REGISTRAR DESEMPENHO ─────────────────────────────────────────────────────
+const _reg = new Set();
+function registrar(id, desemp) {
+  if (_reg.has(id)) return;
+  _reg.add(id);
+
+  const card = document.getElementById(`card-${id}`);
+  if (card) {
+    const flashClass = desemp === 'bom' ? 'flash-g' : desemp === 'medio' ? 'flash-y' : 'flash-r';
+    card.classList.add(flashClass);
+    setTimeout(() => { card.classList.add('done'); }, 400);
+  }
+
+  const data = load();
+  const t = data.temas.find(t => t.id === id);
+  if (!t) { _reg.delete(id); return; }
+
+  // Atualiza histórico e taxa
+  t.historico.push({ data: hoje(), desemp });
+  t.total++;
+  if (desemp === 'bom') t.acertos++;
+
+  // Calcula próximo intervalo (modifica t.sessoes internamente)
+  const intervalo = proximoIntervalo(t, desemp);
+  t.ultimoIntervalo = intervalo;
+  t.proximaRevisao = addDias(hoje(), intervalo);
+
+  salvar(data);
+
+  const tetoAplicado = desemp === 'bom' && !t.step0 && intervalo === (TETO_INTERVALO[t.peso] || Infinity);
+  const decaimentoAplicado = desemp !== 'ruim' && !t.step0 && (() => {
+    const ult = t.historico && t.historico.length > 1 ? t.historico[t.historico.length - 2].data : null;
+    return ult ? Math.abs(diffDias(ult)) >= 30 : false;
+  })();
+  const sufixo = tetoAplicado ? ' (teto de intervalo)' : decaimentoAplicado ? ' (decaimento aplicado)' : '';
+
+  const msgs = {
+    ruim:  `Resetado — volta em ${intervalo} dia${intervalo > 1 ? 's' : ''}.`,
+    medio: `Ok — próxima em ${intervalo} dias${sufixo}.`,
+    bom:   t.step0
+      ? `Step 0: ${t.step0ok}/2 ✓ — amanhã de novo!`
+      : `Ótimo! Próxima em ${intervalo} dias 🚀${sufixo}`,
+  };
+  const tipos = { ruim: 'bad', medio: 'ok', bom: 'ok' };
+  toast(msgs[desemp], tipos[desemp]);
+
+  setTimeout(() => { _reg.delete(id); renderHoje(); renderLista(); }, 600);
+}
+
+// ─── RENDER LISTA ─────────────────────────────────────────────────────────────
+let filtroAtivo = '';
+function setFiltro(area, btn) {
+  filtroAtivo = area;
+  document.querySelectorAll('.filtro button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLista();
+}
+
+function renderLista() {
+  const data = load();
+  let temas = filtroAtivo
+    ? data.temas.filter(t => t.area === filtroAtivo)
+    : data.temas;
+  temas = [...temas].sort((a, b) => a.proximaRevisao.localeCompare(b.proximaRevisao));
+
+  document.getElementById('lista-temas').innerHTML = temas.length === 0
+    ? '<div style="color:var(--muted);font-size:13px;padding:20px 0">Nenhum tema nessa área.</div>'
+    : temas.map(t => {
+        const diff = diffDias(t.proximaRevisao);
+        const taxa = t.total > 0 ? Math.round(t.acertos / t.total * 100) : 0;
+        const taxaC = taxa >= 80 ? 'var(--green)' : taxa >= 60 ? 'var(--yellow)' : 'var(--red)';
+        const isHoje = diff <= 0;
+        // Cards futuros mostram botão "Responder agora"; os de hoje/atrasados mostram btns diretos
+        const botoesHtml = isHoje
+          ? `<div class="btns-lista" id="btns-${t.id}">
+              <button class="btn-desemp-sm btn-ruim"  onclick="registrarLista(${t.id},'ruim')">&lt;60% Errei</button>
+              <button class="btn-desemp-sm btn-medio" onclick="registrarLista(${t.id},'medio')">60–80% Parcial</button>
+              <button class="btn-desemp-sm btn-bom"   onclick="registrarLista(${t.id},'bom')">&gt;80% Acertei</button>
+            </div>`
+          : `<div id="btns-${t.id}" style="display:none" class="btns-lista">
+              <button class="btn-desemp-sm btn-ruim"  onclick="registrarLista(${t.id},'ruim')">&lt;60% Errei</button>
+              <button class="btn-desemp-sm btn-medio" onclick="registrarLista(${t.id},'medio')">60–80% Parcial</button>
+              <button class="btn-desemp-sm btn-bom"   onclick="registrarLista(${t.id},'bom')">&gt;80% Acertei</button>
+            </div>`;
+        return `<div class="lista-card" id="lcard-${t.id}" style="flex-direction:column;align-items:stretch;gap:0">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="lista-card-info">
+              <div class="lista-card-nome">${esc(t.nome)}${t.step0 ? ' <span class="tag tag-step0" style="font-size:9px">S0</span>' : ''}</div>
+              <div class="lista-card-meta">
+                ${areaTag(t.area)}
+                ${pesoTag(t.peso)}
+                <span class="taxa" style="color:${taxaC}">✓ ${taxa}% · ${t.total} rev.</span>
+              </div>
+            </div>
+            <div class="lista-card-right">
+              ${quandoBadge(diff)}
+              ${!isHoje ? `<button class="btn-responder" onclick="toggleBtnsLista(${t.id})">responder</button>` : ''}
+              <button class="btn-del" onclick="renomear(${t.id})">✏ renomear</button>
+              <button class="btn-del" onclick="deletar(${t.id})">remover</button>
+            </div>
+          </div>
+          ${botoesHtml}
+        </div>`;
+      }).join('');
+}
+
+function toggleBtnsLista(id) {
+  const el = document.getElementById(`btns-${id}`);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'grid' : 'none';
+}
+
+function registrarLista(id, desemp) {
+  const card = document.getElementById(`lcard-${id}`);
+  if (card) {
+    const flashClass = desemp === 'bom' ? 'flash-g' : desemp === 'medio' ? 'flash-y' : 'flash-r';
+    card.classList.add(flashClass);
+    setTimeout(() => { card.style.opacity = '0.4'; card.style.pointerEvents = 'none'; }, 400);
+  }
+
+  const data = load();
+  const t = data.temas.find(t => t.id === id);
+  if (!t) return;
+
+  t.historico.push({ data: hoje(), desemp });
+  t.total++;
+  if (desemp === 'bom') t.acertos++;
+
+  const intervalo = proximoIntervalo(t, desemp);
+  t.ultimoIntervalo = intervalo;
+  t.proximaRevisao = addDias(hoje(), intervalo);
+  salvar(data);
+
+  const msgs = {
+    ruim:  `Resetado — volta em ${intervalo} dia${intervalo > 1 ? 's' : ''}.`,
+    medio: `Ok — próxima em ${intervalo} dias.`,
+    bom:   t.step0
+      ? `Step 0: ${t.step0ok}/2 ✓ — amanhã de novo!`
+      : `Ótimo! Próxima em ${intervalo} dias 🚀`,
+  };
+  const tipos = { ruim: 'bad', medio: 'ok', bom: 'ok' };
+  toast(msgs[desemp], tipos[desemp]);
+
+  setTimeout(() => { renderLista(); renderHoje(); }, 600);
+}
+
+function deletar(id) {
+  if (!confirm('Remover este tema?')) return;
+  const data = load();
+  data.temas = data.temas.filter(t => t.id !== id);
+  salvar(data);
+  renderLista();
+  renderHoje();
+  toast('Tema removido.', 'ok');
+}
+
+function renomear(id) {
+  const data = load();
+  const t = data.temas.find(t => t.id === id);
+  if (!t) return;
+  const novoNome = prompt('Novo nome para o tema:', t.nome);
+  if (novoNome === null) return; // cancelou
+  const nome = novoNome.trim();
+  if (!nome) { toast('Nome não pode ser vazio.', 'bad'); return; }
+  t.nome = nome;
+  salvar(data);
+  renderLista();
+  renderHoje();
+  toast('Tema renomeado.', 'ok');
+}
+
+// ─── MODAL ADICIONAR ──────────────────────────────────────────────────────────
+function abrirModal() {
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(() => document.getElementById('inp-nome').focus(), 50);
+}
+function fecharModal() {
+  document.getElementById('overlay').classList.remove('open');
+}
+function salvarTema() {
+  const nome = document.getElementById('inp-nome').value.trim();
+  if (!nome) { toast('Digite o nome do tema.', 'bad'); return; }
+  const area   = document.getElementById('inp-area').value;
+  const peso   = parseInt(document.getElementById('inp-peso').value);
+  const quando = parseInt(document.getElementById('inp-quando').value);
+  const data = load();
+  if (data.temas.some(t => t.nome.toLowerCase() === nome.toLowerCase()))
+    if (!confirm(`"${nome}" já existe. Adicionar mesmo assim?`)) return;
+  data.temas.push({
+    id: uid(), nome, area, peso,
+    sessoes: 0,
+    step0: true, step0ok: 0, step0data: '',
+    proximaRevisao: addDias(hoje(), quando),
+    ultimoIntervalo: quando || 1,
+    historico: [], acertos: 0, total: 0,
+  });
+  salvar(data);
+  fecharModal();
+  document.getElementById('inp-nome').value = '';
+  toast(`"${nome}" adicionado! (Step 0 — 2 ✓ pra liberar)`, 'ok');
+  renderHoje();
+  renderLista();
+}
+
+// ─── HELPERS VISUAIS ──────────────────────────────────────────────────────────
+function areaTag(a) {
+  const m = { ped:'Ped', go:'GO', cm:'CM', cx:'Cirurgia', prev:'Prev' };
+  return `<span class="tag tag-${a}">${esc(m[a]||a)}</span>`;
+}
+function pesoTag(p) {
+  const cls = p===3?'tag-peso-alta':p===2?'tag-peso-media':'tag-peso-baixa';
+  const txt = p===3?'🔴 Alta':p===2?'🟡 Média':'🟢 Baixa';
+  return `<span class="tag ${cls}">${txt}</span>`;
+}
+function quandoBadge(diff) {
+  if (diff < 0)  return `<span class="quando quando-atrasado">${Math.abs(diff)}d atrasado</span>`;
+  if (diff === 0)return `<span class="quando quando-hoje">Hoje</span>`;
+  if (diff <= 7) return `<span class="quando quando-breve">em ${diff}d</span>`;
+  return           `<span class="quando quando-futuro">em ${diff}d</span>`;
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+let _tt = null;
+function toast(msg, tipo = 'info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast toast-${tipo} show`;
+  clearTimeout(_tt);
+  _tt = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function mostrarView(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(`view-${id}`).classList.add('active');
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (id === 'lista') renderLista();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+document.getElementById('inp-nome').addEventListener('keydown', e => {
+  if (e.key === 'Enter') salvarTema();
+  if (e.key === 'Escape') fecharModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharModal(); });
+
+// ─── GOOGLE DRIVE SYNC (v2 — bugs corrigidos) ────────────────────────────────
+// Para usar: crie um projeto em console.cloud.google.com,
+// ative a "Google Drive API", crie credenciais OAuth 2.0 (tipo "Aplicativo da Web")
+// e cole o Client ID abaixo.
+const GDRIVE_CLIENT_ID = '171301925143-fjk46tqonev40fi8sdk5b18uvf6g4uqg.apps.googleusercontent.com';
+const GDRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
+const GDRIVE_FILENAME = 'revisao_espacada_data.json';
+const GDRIVE_SPACE = 'appDataFolder'; // pasta oculta, só o app acessa
+
+let _gtoken = null;   // access token atual
+let _gfileId = null;  // ID do arquivo no Drive
+let _gauto   = true;  // auto-sync ativado
+
+// ── UI helpers ─────────────────────────────────────────────────────────────
+function syncSetStatus(msg, state='') {
+  document.getElementById('sync-msg').textContent = msg;
+  const dot = document.getElementById('sync-dot');
+  dot.className = 'sync-dot' + (state ? ' ' + state : '');
+}
+function syncSetBusy(on) {
+  ['btn-push','btn-pull'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = on;
+  });
+  if (on) syncSetStatus('Sincronizando…', 'busy');
+}
+
+// ── Login ────────────────────────────────────────────────────────────────
+function gdriveLogin() {
+  if (!window.google) { syncSetStatus('Biblioteca Google não carregada. Tente recarregar.', 'err'); return; }
+  google.accounts.oauth2.initTokenClient({
+    client_id: GDRIVE_CLIENT_ID,
+    scope: GDRIVE_SCOPE,
+    callback: async (resp) => {
+      if (resp.error) { syncSetStatus('Erro no login: ' + resp.error, 'err'); return; }
+      _gtoken = resp.access_token;
+      localStorage.setItem('gdrive_token_hint', '1'); // lembra que já logou
+      document.getElementById('btn-login').style.display  = 'none';
+      document.getElementById('btn-push').style.display   = '';
+      document.getElementById('btn-pull').style.display   = '';
+      document.getElementById('btn-logout').style.display = '';
+      syncSetStatus('Conectado ao Google Drive', 'ok');
+      // Ao conectar: busca arquivo existente e puxa dados
+      await gdriveGetFileId();
+      if (_gfileId) {
+        await gdrivePull(true); // pull silencioso na primeira conexão
+      } else {
+        await gdrivePush(true); // cria arquivo com dados locais
+      }
+    },
+  }).requestAccessToken();
+}
+
+function gdriveLogout() {
+  _gtoken = null; _gfileId = null;
+  localStorage.removeItem('gdrive_token_hint');
+  document.getElementById('btn-login').style.display  = '';
+  document.getElementById('btn-push').style.display   = 'none';
+  document.getElementById('btn-pull').style.display   = 'none';
+  document.getElementById('btn-logout').style.display = 'none';
+  syncSetStatus('Desconectado do Google Drive', '');
+}
+
+// ── Helpers de API ──────────────────────────────────────────────────────
+async function gdriveGetFileId() {
+  if (!_gtoken) return null;
+  const r = await fetch(
+    `https://www.googleapis.com/drive/v3/files?spaces=${GDRIVE_SPACE}&q=name%3D%27${GDRIVE_FILENAME}%27&fields=files(id,name)`,
+    { headers: { Authorization: 'Bearer ' + _gtoken } }
+  );
+  const d = await r.json();
+  _gfileId = d.files && d.files.length > 0 ? d.files[0].id : null;
+  return _gfileId;
+}
+
+// ── Push (local → Drive) ───────────────────────────────────────────────
+async function gdrivePush(silent = false) {
+  if (!_gtoken) { syncSetStatus('Conecte o Drive primeiro.', 'err'); return; }
+  syncSetBusy(true);
+  try {
+    const body = JSON.stringify(load());
+    const blob = new Blob([body], { type: 'application/json' });
+
+    if (!_gfileId) await gdriveGetFileId();
+
+    let r;
+    if (_gfileId) {
+      // Atualiza arquivo existente
+      r = await fetch(
+        `https://www.googleapis.com/upload/drive/v3/files/${_gfileId}?uploadType=media`,
+        { method: 'PATCH', headers: { Authorization: 'Bearer ' + _gtoken, 'Content-Type': 'application/json' }, body }
+      );
+    } else {
+      // Cria arquivo novo na appDataFolder
+      const meta = JSON.stringify({ name: GDRIVE_FILENAME, parents: [GDRIVE_SPACE] });
+      const form = new FormData();
+      form.append('metadata', new Blob([meta], { type: 'application/json' }));
+      form.append('file', blob);
+      r = await fetch(
+        'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
+        { method: 'POST', headers: { Authorization: 'Bearer ' + _gtoken }, body: form }
+      );
+      const created = await r.clone().json().catch(()=>({}));
+      if (created.id) _gfileId = created.id;
+    }
+
+    if (r.ok) {
+      const now = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      syncSetStatus(`Drive sincronizado às ${now}`, 'ok');
+    } else {
+      const err = await r.json().catch(()=>({}));
+      throw new Error(err.error?.message || r.status);
+    }
+  } catch(e) {
+    syncSetStatus('Erro ao salvar no Drive: ' + e.message, 'err');
+    if (!silent) toast('Erro ao salvar no Drive.', 'bad');
+  } finally {
+    syncSetBusy(false);
+    ['btn-push','btn-pull'].forEach(id => { const el=document.getElementById(id); if(el) el.disabled=false; });
+  }
+}
+
+// ── Pull (Drive → local) ───────────────────────────────────────────────
+async function gdrivePull(silent = false) {
+  if (!_gtoken) { syncSetStatus('Conecte o Drive primeiro.', 'err'); return; }
+  syncSetBusy(true);
+  try {
+    if (!_gfileId) await gdriveGetFileId();
+    if (!_gfileId) {
+      syncSetStatus('Nenhum dado no Drive ainda.', '');
+      syncSetBusy(false);
+      ['btn-push','btn-pull'].forEach(id => { const el=document.getElementById(id); if(el) el.disabled=false; });
+      return;
+    }
+
+    const r = await fetch(
+      `https://www.googleapis.com/drive/v3/files/${_gfileId}?alt=media`,
+      { headers: { Authorization: 'Bearer ' + _gtoken } }
+    );
+    if (!r.ok) throw new Error(r.status);
+    const remoto = await r.json();
+
+    if (remoto.temas && remoto.temas.length > 0) {
+      // Merge: remoto é base, preserva temas locais ausentes no remoto
+      const local = load();
+      const remotIds = new Set(remoto.temas.map(t => t.id));
+      const soLocais = local.temas.filter(t => !remotIds.has(t.id));
+      // Salva direto sem triggerar auto-push (evita loop)
+      try { salvar({ temas: [...remoto.temas, ...soLocais] }, true); } catch(e) {}
+      renderHoje();
+      renderLista();
+    }
+
+    const now = new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    syncSetStatus(`Drive carregado às ${now}`, 'ok');
+    if (!silent) toast('Dados carregados do Drive!', 'ok');
+  } catch(e) {
+    syncSetStatus('Erro ao carregar do Drive: ' + e.message, 'err');
+    if (!silent) toast('Erro ao carregar do Drive.', 'bad');
+  } finally {
+    syncSetBusy(false);
+    ['btn-push','btn-pull'].forEach(id => { const el=document.getElementById(id); if(el) el.disabled=false; });
+  }
+}
+
+// (auto-push integrado diretamente na função salvar acima)
+
+// ── Reconecta automaticamente ao carregar a página ────────────────────
+// Usa prompt:'none' para reconectar sem popup se já tiver sessão Google ativa
+function tentarReconectar() {
+  if (!window.google || !window.google.accounts) {
+    // Biblioteca ainda não carregou, tenta de novo em 500ms
+    setTimeout(tentarReconectar, 500);
+    return;
+  }
+  if (!localStorage.getItem('gdrive_token_hint')) return; // nunca conectou
+
+  try {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: GDRIVE_CLIENT_ID,
+      scope: GDRIVE_SCOPE,
+      prompt: 'none', // sem popup — falha silenciosamente se não tiver sessão
+      callback: async (resp) => {
+        if (resp.error || !resp.access_token) {
+          // Sessão expirou: mostra botão de login normalmente
+          syncSetStatus('Clique para reconectar ao Drive', '');
+          return;
+        }
+        _gtoken = resp.access_token;
+        document.getElementById('btn-login').style.display  = 'none';
+        document.getElementById('btn-push').style.display   = '';
+        document.getElementById('btn-pull').style.display   = '';
+        document.getElementById('btn-logout').style.display = '';
+        syncSetStatus('Drive reconectado ✓', 'ok');
+        await gdriveGetFileId();
+        if (_gfileId) await gdrivePull(true);
+        else await gdrivePush(true);
+      },
+    });
+    client.requestAccessToken({ prompt: 'none' });
+  } catch(e) {
+    syncSetStatus('Clique para conectar ao Drive', '');
+  }
+}
+
+// Aguarda DOM + script Google carregarem
+window.addEventListener('load', () => setTimeout(tentarReconectar, 600));
+
+// ─── PROVA COUNTDOWN + PROJEÇÃO ──────────────────────────────────────────────
+const PROVA_DATE = '2027-12-01';
+const INICIO_DATE = '2026-05-06'; // data de início do sistema
+
+function diasAteProva() {
+  const hoje_ = hoje().split('-').map(Number);
+  const prova = PROVA_DATE.split('-').map(Number);
+  return Math.round((new Date(prova[0],prova[1]-1,prova[2]) - new Date(hoje_[0],hoje_[1]-1,hoje_[2])) / 86400000);
+}
+
+function projetarRevisoes(t) {
+  // Simula quantas revisões o tema vai ter até a prova
+  const diasRestantes = diasAteProva();
+  if (diasRestantes <= 0) return 0;
+  let count = 0;
+  let intervalo = t.ultimoIntervalo || 1;
+  let sessoes = t.sessoes || 0;
+  let diasAcum = diffDias(t.proximaRevisao); // dias até próxima revisão
+  const BASE = [1, 3, 7, 16, 35, 70, 120, 180];
+  const multPeso = t.peso === 3 ? 0.6 : t.peso === 2 ? 1.0 : 1.4;
+  while (diasAcum <= diasRestantes && count < 30) {
+    count++;
+    const idx = Math.min(sessoes, BASE.length - 1);
+    intervalo = Math.max(1, Math.round(BASE[idx] * 1.8 * multPeso)); // assume bom
+    sessoes++;
+    diasAcum += intervalo;
+  }
+  return count;
+}
+
+function renderProvaBar() {
+  const dias = diasAteProva();
+  const el = document.getElementById('prova-dias');
+  const barra = document.getElementById('prova-barra');
+  const alerta = document.getElementById('prova-alerta');
+  if (!el) return;
+
+  if (dias <= 0) {
+    el.textContent = 'Prova chegou!';
+    el.style.color = 'var(--red)';
+    barra.style.width = '100%';
+    return;
+  }
+
+  const semanas = Math.floor(dias / 7);
+  el.textContent = `${dias} dias · ${semanas} semanas`;
+
+  // Barra de progresso: quanto do período total já passou
+  const totalDias = Math.round((new Date(2027,11,1) - new Date(2026,4,6)) / 86400000);
+  const passados = totalDias - dias;
+  const pct = Math.min(100, Math.round(passados / totalDias * 100));
+  barra.style.width = pct + '%';
+
+  // Alerta: temas de alta prioridade com poucas revisões projetadas
+  const data = load();
+  const criticos = data.temas.filter(t => t.peso === 3 && projetarRevisoes(t) < 4);
+  if (criticos.length > 0) {
+    alerta.style.display = 'block';
+    alerta.textContent = `⚠ ${criticos.length} tema${criticos.length>1?'s':''} de alta prioridade com menos de 4 revisões previstas até a prova`;
+  } else {
+    alerta.style.display = 'none';
+  }
+}
+
+
+// ─── DADOS MIGRADOS (executa uma única vez) ───────────────────────────────────
+(function() {
+  const existing = localStorage.getItem('rev_v6');
+  // Só injeta se não tiver dados ainda OU se ainda tiver duplicatas (>33 temas)
+  if (!existing || JSON.parse(existing).temas.length > 33) {
+    const dados = {"temas":[{"id":1778107824765,"nome":"CAD — coloproctologia e CCR","area":"cx","peso":3,"sessoes":2,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-09","ultimoIntervalo":2,"historico":[{"data":"2026-04-29","desemp":"medio"},{"data":"2026-05-07","desemp":"medio"}],"acertos":0,"total":2},{"id":1778107824766,"nome":"Vascular","area":"cx","peso":3,"sessoes":2,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-09","ultimoIntervalo":2,"historico":[{"data":"2026-04-29","desemp":"medio"},{"data":"2026-05-07","desemp":"medio"}],"acertos":0,"total":2},{"id":1778107824767,"nome":"Puericultura — crescimento e DNPM","area":"ped","peso":3,"sessoes":2,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-10","ultimoIntervalo":3,"historico":[{"data":"2026-04-29","desemp":"medio"},{"data":"2026-05-07","desemp":"bom"}],"acertos":1,"total":2},{"id":1778150762232,"nome":"Anticoncepção","area":"go","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-09","ultimoIntervalo":2,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762239,"nome":"Abdome agudo","area":"cx","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-16","ultimoIntervalo":9,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778107824777,"nome":"SCA","area":"cm","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-16","ultimoIntervalo":10,"historico":[{"data":"2026-04-29","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762244,"nome":"Pré-natal e modificações gravídicas","area":"go","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-21","ultimoIntervalo":14,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762246,"nome":"Vacinação pediátrica","area":"ped","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-23","ultimoIntervalo":16,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762247,"nome":"DIP e endometriose","area":"go","peso":2,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-24","ultimoIntervalo":17,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762252,"nome":"Puericultura — aleitamento","area":"ped","peso":2,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-29","ultimoIntervalo":22,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762254,"nome":"Urologia","area":"cx","peso":2,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-31","ultimoIntervalo":24,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762256,"nome":"Cirurgia torácica","area":"cx","peso":2,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-06-02","ultimoIntervalo":26,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762257,"nome":"Processo saúde-doença e prevenção","area":"prev","peso":2,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-06-03","ultimoIntervalo":27,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762234,"nome":"Taquiarritmia e bradiarritmia","area":"cm","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-11","ultimoIntervalo":4,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762235,"nome":"Sangramento gestacional","area":"go","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-12","ultimoIntervalo":5,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762236,"nome":"Neonatologia — icterícia","area":"ped","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-13","ultimoIntervalo":6,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762237,"nome":"Trauma — abdominal e torácico","area":"cx","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-14","ultimoIntervalo":7,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762238,"nome":"Hérnias","area":"cx","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-15","ultimoIntervalo":8,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762242,"nome":"Neonatologia — infecções congênitas","area":"ped","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-19","ultimoIntervalo":12,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762249,"nome":"Climatério e TRH","area":"go","peso":2,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-26","ultimoIntervalo":19,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762231,"nome":"DM — classificação, tto, complicações","area":"cm","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-08","ultimoIntervalo":1,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762233,"nome":"Neonatologia — reanimação e triagens","area":"ped","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-10","ultimoIntervalo":3,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762240,"nome":"Choque — abordagem e tipos","area":"cm","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-17","ultimoIntervalo":10,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762241,"nome":"Gineco endócrina — amenorreias e SOP","area":"go","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-18","ultimoIntervalo":11,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762243,"nome":"Sífilis e ISTs","area":"cm","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-20","ultimoIntervalo":13,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762245,"nome":"Neonatologia — sepse e desconforto resp.","area":"ped","peso":3,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-22","ultimoIntervalo":15,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762248,"nome":"CAD — esôfago","area":"cx","peso":2,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-25","ultimoIntervalo":18,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762250,"nome":"CAD — estômago e CA gástrico","area":"cx","peso":2,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-27","ultimoIntervalo":20,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762251,"nome":"Puberdade precoce e tardia","area":"go","peso":2,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-28","ultimoIntervalo":21,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762253,"nome":"CAD — pâncreas e vias biliares","area":"cx","peso":2,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-30","ultimoIntervalo":23,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762255,"nome":"CAD — fígado e tumores hepáticos","area":"cx","peso":2,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-06-01","ultimoIntervalo":25,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778150762258,"nome":"Rastreamento e prevenção quaternária","area":"prev","peso":2,"sessoes":1,"step0":false,"step0ok":0,"step0data":"","proximaRevisao":"2026-06-04","ultimoIntervalo":28,"historico":[{"data":"2026-04-30","desemp":"medio"}],"acertos":0,"total":1},{"id":1778197112395,"nome":"Pneumo ped","area":"ped","peso":3,"sessoes":0,"step0":true,"step0ok":0,"step0data":"","proximaRevisao":"2026-05-08","ultimoIntervalo":1,"historico":[],"acertos":0,"total":0}]};
+    localStorage.setItem('rev_v6', JSON.stringify(dados));
+    localStorage.setItem('rev_v6_init', '1');
+    console.log('Dados migrados: ' + dados.temas.length + ' temas');
+  }
+})();
+
+initDefault();
+renderHoje();
+renderProvaBar();
+</script>
+
+
+</body></html>
